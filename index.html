@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowUnity Link Generator</title>
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        input {
+            padding: 8px;
+            background-color: #333;
+            color: #ffffff;
+            border: none;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #generatedUrl {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        #contentUrl {
+            color: #4CAF50;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #Footer {
+            background-color: transparent;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>KnowUnity PDF-Link Generator</h1>
+    
+    <label for="knowunity_url">Knowunity-Link:</label>
+    <input type="text" id="knowunity_url" placeholder="hier eingeben">
+
+    <button onclick="generateUrl()">Generate URL</button>
+
+    <div id="generatedUrl"></div>
+
+    <script>
+        function generateUrl() {
+            var knowunityUrlInput = document.getElementById('knowunity_url').value;
+
+            // Extract Know-ID from Link
+            var match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
+            var extractedId = match ? match[0] : null;
+
+            if (extractedId) {
+                // Create API Url
+                var apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
+
+                // Fetch JSON from API Url
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(jsonResponse => {
+                        // Extract Content URL pdf
+                        var contentUrl = jsonResponse.documents[0].contentUrl;
+
+                        // var for extracted URL
+                        var generatedUrlDiv = document.getElementById('generatedUrl');
+                        generatedUrlDiv.innerHTML = 'Content URL: <span id="contentUrl" onclick="openContentUrl(\'' + contentUrl + '\')">' + contentUrl + '</span>';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching API data:', error);
+                        alert('Server Error');
+                    });
+            } else {
+                alert('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
+            }
+        }
+
+        function openContentUrl(url) {
+            window.open(url, '_blank');
+        }
+    </script>
+
+    <div id="Footer">
+        Made with &#x2764; by lennerd24<br>Inspired by 
+        <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" style="color: white;">
+            Snowad14
+        </a>
+    </div>
+</body>
+</html>
