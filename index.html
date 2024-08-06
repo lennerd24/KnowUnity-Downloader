@@ -12,32 +12,30 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="max-w-md w-full space-y-8">
-        <h1 class="text-3xl font-bold text-center mb-8">KnowUnity PDF-Link Generator</h1>
-        
-        <div class="space-y-4">
-            <label for="knowunity_url" class="block text-sm font-medium">Knowunity-Link:</label>
-            <input type="text" id="knowunity_url" placeholder="Enter here" class="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-            <button onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105">Generate URL</button>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full space-y-8 bg-gray-800 p-8 rounded-lg shadow-lg">
+        <h1 class="text-4xl font-bold text-center mb-8 text-green-400">KnowUnity PDF-Link Generator</h1>
+       
+        <div class="space-y-6">
+            <div>
+                <label for="knowunity_url" class="block text-sm font-medium mb-2">Knowunity-Link:</label>
+                <input type="text" id="knowunity_url" placeholder="Enter Knowunity URL or ID here" class="w-full px-4 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+            </div>
+            <button onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                Generate URL
+            </button>
         </div>
-
         <div id="generatedUrl" class="mt-6 text-center"></div>
     </div>
-
     <footer class="fixed bottom-0 w-full bg-gray-800 text-white text-center py-4">
         <p>Made with ❤️ by lennerd24</p>
-        <p>Inspired by 
-            <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" class="text-green-400 hover:text-green-300">
+        <p>Inspired by
+            <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" class="text-green-400 hover:text-green-300 transition duration-300">
                 Snowad14
             </a>
         </p>
-        <p class="mt-2">Visitors: <img src="/api/placeholder/80/20" alt="Visitor Counter" class="inline"></p>
-        <!-- Visitor Counter - REMOVE THIS -->
-        <br>Visitors: <a href="https://www.cutercounter.com/" target="_blank"><img src="https://www.cutercounter.com/hits.php?id=huxocxqk&nd=5&style=1" border="0" alt="hit counter"></a>
-        <!-- End of Visitor Counter -->
+        <p class="mt-2">Visitors: <img src="/api/placeholder/100/20" alt="visitor counter" class="inline"></p>
     </footer>
-
     <script>
         function generateUrl() {
             var knowunityUrlInput = document.getElementById('knowunity_url').value;
@@ -52,7 +50,7 @@
                         var generatedUrlDiv = document.getElementById('generatedUrl');
                         generatedUrlDiv.innerHTML = '<p class="text-lg font-semibold mb-2">Content URL:</p>' +
                                                     '<a href="' + contentUrl + '" target="_blank" ' +
-                                                    'class="text-green-400 hover:text-green-300 break-all">' + contentUrl + '</a>';
+                                                    'class="text-green-400 hover:text-green-300 break-all transition duration-300">' + contentUrl + '</a>';
                     })
                     .catch(error => {
                         console.error('Error fetching API data:', error);
@@ -63,6 +61,5 @@
             }
         }
     </script>
-    
 </body>
 </html>
