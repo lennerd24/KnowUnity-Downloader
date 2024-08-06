@@ -10,6 +10,20 @@
         body {
             font-family: 'Space Grotesk', sans-serif;
         }
+        .custom-loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col items-center justify-center p-4">
@@ -21,13 +35,14 @@
                 <label for="knowunity_url" class="block text-sm font-medium mb-2">Knowunity-Link:</label>
                 <input type="text" id="knowunity_url" placeholder="Enter Knowunity URL or ID here" class="w-full px-4 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
             </div>
-            <button onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            <button id="generateButton" onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                 Generate URL
             </button>
         </div>
+        <div id="alertContainer" class="mt-6 hidden"></div>
         <div id="generatedUrl" class="mt-6 text-center"></div>
     </div>
-    <footer class="fixed bottom-0 w-full bg-gray-800 text-white text-center py-4">
+    <footer class="mt-8 w-full text-white text-center py-4">
         <p>Made with ❤️ by lennerd24</p>
         <p>Inspired by
             <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" class="text-green-400 hover:text-green-300 transition duration-300">
@@ -38,27 +53,69 @@
     </footer>
     <script>
         function generateUrl() {
-            var knowunityUrlInput = document.getElementById('knowunity_url').value;
-            var match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
-            var extractedId = match ? match[0] : null;
+            const knowunityUrlInput = document.getElementById('knowunity_url').value;
+            const generateButton = document.getElementById('generateButton');
+            const alertContainer = document.getElementById('alertContainer');
+            const generatedUrlDiv = document.getElementById('generatedUrl');
+
+            // Reset previous results
+            alertContainer.innerHTML = '';
+            alertContainer.classList.add('hidden');
+            generatedUrlDiv.innerHTML = '';
+
+            // Show loading state
+            generateButton.disabled = true;
+            generateButton.innerHTML = '<span class="custom-loader mr-2"></span>Generating...';
+
+            const match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
+            const extractedId = match ? match[0] : null;
+
             if (extractedId) {
-                var apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
+                const apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
                 fetch(apiUrl)
                     .then(response => response.json())
                     .then(jsonResponse => {
-                        var contentUrl = jsonResponse.documents[0].contentUrl;
-                        var generatedUrlDiv = document.getElementById('generatedUrl');
-                        generatedUrlDiv.innerHTML = '<p class="text-lg font-semibold mb-2">Content URL:</p>' +
-                                                    '<a href="' + contentUrl + '" target="_blank" ' +
-                                                    'class="text-green-400 hover:text-green-300 break-all transition duration-300">' + contentUrl + '</a>';
+                        const contentUrl = jsonResponse.documents[0].contentUrl;
+                        showSuccess(contentUrl);
                     })
                     .catch(error => {
                         console.error('Error fetching API data:', error);
-                        alert('Server Error');
+                        showError('Server Error');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        generateButton.disabled = false;
+                        generateButton.innerHTML = 'Generate URL';
                     });
             } else {
-                alert('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
+                showError('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
+                generateButton.disabled = false;
+                generateButton.innerHTML = 'Generate URL';
             }
+        }
+
+        function showError(message) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>${message}</p>
+                </div>
+            `;
+            alertContainer.classList.remove('hidden');
+        }
+
+        function showSuccess(url) {
+            const generatedUrlDiv = document.getElementById('generatedUrl');
+            generatedUrlDiv.innerHTML = `
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded" role="alert">
+                    <p class="font-bold">Success</p>
+                    <p class="text-lg font-semibold mb-2">Content URL:</p>
+                    <a href="${url}" target="_blank" class="text-green-600 hover:text-green-800 break-all transition duration-300">
+                        ${url}
+                    </a>
+                </div>
+            `;
         }
     </script>
 </body>
