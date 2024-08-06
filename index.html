@@ -4,93 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KnowUnity Link Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Space Grotesk', sans-serif;
-            text-align: center;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        input {
-            padding: 8px;
-            background-color: #333;
-            color: #ffffff;
-            border: none;
-            margin-top: 10px;
-        }
-
-        button {
-            padding: 8px;
-            background-color: #4CAF50;
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #generatedUrl {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        #contentUrl {
-            color: #4CAF50;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        #Footer {
-            background-color: transparent;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
         }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1>KnowUnity PDF-Link Generator</h1>
-    
-    <label for="knowunity_url">Knowunity-Link:</label>
-    <input type="text" id="knowunity_url" placeholder="enter here">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full space-y-8">
+        <h1 class="text-3xl font-bold text-center mb-8">KnowUnity PDF-Link Generator</h1>
+        
+        <div class="space-y-4">
+            <label for="knowunity_url" class="block text-sm font-medium">Knowunity-Link:</label>
+            <input type="text" id="knowunity_url" placeholder="Enter here" class="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <button onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105">Generate URL</button>
+        </div>
 
-    <button onclick="generateUrl()">Generate URL</button>
+        <div id="generatedUrl" class="mt-6 text-center"></div>
+    </div>
 
-    <div id="generatedUrl"></div>
+    <footer class="fixed bottom-0 w-full bg-gray-800 text-white text-center py-4">
+        <p>Made with ❤️ by lennerd24</p>
+        <p>Inspired by 
+            <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" class="text-green-400 hover:text-green-300">
+                Snowad14
+            </a>
+        </p>
+        <p class="mt-2">Visitors: <img src="/api/placeholder/80/20" alt="Visitor Counter" class="inline"></p>
+        <!-- Visitor Counter - REMOVE THIS -->
+        <br>Visitors: <a href="https://www.cutercounter.com/" target="_blank"><img src="https://www.cutercounter.com/hits.php?id=huxocxqk&nd=5&style=1" border="0" alt="hit counter"></a>
+        <!-- End of Visitor Counter -->
+    </footer>
 
     <script>
         function generateUrl() {
             var knowunityUrlInput = document.getElementById('knowunity_url').value;
-
-            // Extract Know-ID from Link
             var match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
             var extractedId = match ? match[0] : null;
-
             if (extractedId) {
-                // Create API Url
                 var apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
-
-                // Fetch JSON from API Url
                 fetch(apiUrl)
                     .then(response => response.json())
                     .then(jsonResponse => {
-                        // Extract Content URL pdf
                         var contentUrl = jsonResponse.documents[0].contentUrl;
-
-                        // var for extracted URL
                         var generatedUrlDiv = document.getElementById('generatedUrl');
-                        generatedUrlDiv.innerHTML = 'Content URL: <span id="contentUrl" onclick="openContentUrl(\'' + contentUrl + '\')">' + contentUrl + '</span>';
+                        generatedUrlDiv.innerHTML = '<p class="text-lg font-semibold mb-2">Content URL:</p>' +
+                                                    '<a href="' + contentUrl + '" target="_blank" ' +
+                                                    'class="text-green-400 hover:text-green-300 break-all">' + contentUrl + '</a>';
                     })
                     .catch(error => {
                         console.error('Error fetching API data:', error);
@@ -100,24 +62,7 @@
                 alert('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
             }
         }
-
-        function openContentUrl(url) {
-            window.open(url, '_blank');
-        }
     </script>
-
-    <div id="Footer">
-        Made with &#x2764; by lennerd24<br>Inspired by 
-        <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" style="color: white;">
-            Snowad14
-        </a>
-
-
-<!-- Visitor Counter - REMOVE THIS -->
-<br>Visitors: <a href="https://www.cutercounter.com/" target="_blank"><img src="https://www.cutercounter.com/hits.php?id=huxocxqk&nd=5&style=1" border="0" alt="hit counter"></a>
-<!-- End of Visitor Counter -->
-
-        
-    </div>
+    
 </body>
 </html>
