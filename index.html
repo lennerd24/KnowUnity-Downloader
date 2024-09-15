@@ -4,120 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KnowUnity Link Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            text-align: center;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
         }
-
-        input {
-            padding: 8px;
-            background-color: #333;
-            color: #ffffff;
-            border: none;
-            margin-top: 10px;
+        .custom-loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #10B981;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
         }
-
-        button {
-            padding: 8px;
-            background-color: #4CAF50;
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #generatedUrl {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        #contentUrl {
-            color: #4CAF50;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        #Footer {
-            background-color: transparent;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 1000;
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1>KnowUnity PDF-Link Generator</h1>
-    
-    <label for="knowunity_url">Knowunity-Link:</label>
-    <input type="text" id="knowunity_url" placeholder="enter here">
-
-    <button onclick="generateUrl()">Generate URL</button>
-
-    <div id="generatedUrl"></div>
-
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="max-w-xl w-full space-y-8 bg-gray-800 p-10 rounded-2xl shadow-2xl">
+        <div class="text-center">
+            <h1 class="text-5xl font-extrabold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">KnowUnity</h1>
+            <h2 class="text-2xl font-semibold text-gray-300">PDF-Link Generator</h2>
+        </div>
+        
+        <div class="space-y-6">
+            <div>
+                <label for="knowunity_url" class="block text-sm font-medium mb-2 text-gray-300">Knowunity-Link:</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-link"></i>
+                    </span>
+                    <input type="text" id="knowunity_url" placeholder="Enter Knowunity URL or ID here" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+                </div>
+            </div>
+            <button id="generateButton" onclick="generateUrl()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center">
+                <i class="fas fa-magic mr-2"></i> Generate URL
+            </button>
+        </div>
+        <div id="alertContainer" class="mt-6 hidden"></div>
+        <div id="generatedUrl" class="mt-6 text-center"></div>
+    </div>
+    <footer class="mt-8 w-full text-gray-400 text-center py-4">
+        <p>Made with <span class="text-red-500">❤️</span> by lennerd24</p>
+        <p>Inspired by
+            <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" class="text-green-400 hover:text-green-300 transition duration-300">
+                Snowad14
+            </a>
+        </p>
+        <p class="mt-2">Visitors: <img src="/api/placeholder/100/20" alt="visitor counter" class="inline"></p>
+    </footer>
     <script>
         function generateUrl() {
-            var knowunityUrlInput = document.getElementById('knowunity_url').value;
+            const knowunityUrlInput = document.getElementById('knowunity_url').value;
+            const generateButton = document.getElementById('generateButton');
+            const alertContainer = document.getElementById('alertContainer');
+            const generatedUrlDiv = document.getElementById('generatedUrl');
 
-            // Extract Know-ID from Link
-            var match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
-            var extractedId = match ? match[0] : null;
+            // Reset previous results
+            alertContainer.innerHTML = '';
+            alertContainer.classList.add('hidden');
+            generatedUrlDiv.innerHTML = '';
+
+            // Show loading state
+            generateButton.disabled = true;
+            generateButton.innerHTML = '<span class="custom-loader mr-2"></span>Generating...';
+
+            const match = knowunityUrlInput.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
+            const extractedId = match ? match[0] : null;
 
             if (extractedId) {
-                // Create API Url
-                var apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
-
-                // Fetch JSON from API Url
+                const apiUrl = 'https://apiedge-eu-central-1.knowunity.com/knows/' + extractedId;
                 fetch(apiUrl)
                     .then(response => response.json())
                     .then(jsonResponse => {
-                        // Extract Content URL pdf
-                        var contentUrl = jsonResponse.documents[0].contentUrl;
-
-                        // var for extracted URL
-                        var generatedUrlDiv = document.getElementById('generatedUrl');
-                        generatedUrlDiv.innerHTML = 'Content URL: <span id="contentUrl" onclick="openContentUrl(\'' + contentUrl + '\')">' + contentUrl + '</span>';
+                        const contentUrl = jsonResponse.documents[0].contentUrl;
+                        showSuccess(contentUrl);
                     })
                     .catch(error => {
                         console.error('Error fetching API data:', error);
-                        alert('Server Error');
+                        showError('Server Error');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        generateButton.disabled = false;
+                        generateButton.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate URL';
                     });
             } else {
-                alert('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
+                showError('Invalid KnowUnity link. Make sure that a correct URL or ID is entered.');
+                generateButton.disabled = false;
+                generateButton.innerHTML = '<i class="fas fa-magic mr-2"></i> Generate URL';
             }
         }
 
-        function openContentUrl(url) {
-            window.open(url, '_blank');
+        function showError(message) {
+            showMessage('Error', message, 'red');
+        }
+
+        function showSuccess(url) {
+            const message = `
+                <p class="text-lg font-semibold mb-2">Content URL:</p>
+                <a href="${url}" target="_blank" class="text-green-600 hover:text-green-800 break-all transition duration-300">
+                    ${url}
+                </a>
+            `;
+            showMessage('Success', message, 'green');
+        }
+
+        function showMessage(title, content, color) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="bg-${color}-100 border-l-4 border-${color}-500 text-${color}-700 p-4 rounded-lg" role="alert">
+                    <p class="font-bold">${title}</p>
+                    ${content}
+                </div>
+            `;
+            alertContainer.classList.remove('hidden');
         }
     </script>
-
-    <div id="Footer">
-        Made with &#x2764; by lennerd24<br>Inspired by 
-        <a href="https://github.com/Snowad14/KnowUnity-Downloader/" target="_blank" style="color: white;">
-            Snowad14
-        </a>
-
-
-<!-- Visitor Counter - REMOVE THIS -->
-<br>Visitors: <a href="https://www.cutercounter.com/" target="_blank"><img src="https://www.cutercounter.com/hits.php?id=huxocxqk&nd=5&style=1" border="0" alt="hit counter"></a>
-<!-- End of Visitor Counter -->
-
-        
-    </div>
 </body>
 </html>
